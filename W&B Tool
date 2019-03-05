@@ -1,6 +1,9 @@
 #W+B TOOL
 library(shiny)
 shinyApp(
+  
+  #the interface; where users can input their weight data
+  
   ui = fluidPage(
     navbarPage("Weight and Balance Tool",
       tabPanel("Aircraft 1",
@@ -27,6 +30,9 @@ shinyApp(
     ),              
   server = function(input, output) {
     output$matrix <- renderTable({
+      
+      #now, the fun part: the calculations
+      
       y <- matrix(nrow = 6, ncol = 3, data = NA)
       rownames(y) <- c("empty", "fpax", "rpax", "fuel", "baggage", "total")
       colnames(y) <- c("weight", "arm", "moment")
