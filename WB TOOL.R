@@ -1,0 +1,46 @@
+#W+B TOOL
+library(shiny)
+shinyApp(
+  ui = fluidPage(
+    navbarPage("Weight and Balance Tool",
+      tabPanel("Aircraft 1",
+        sidebarPanel(
+          h4("Weights (lbs)"),
+          sliderInput("i1", "Pilot and front passengers", 0, 400, 170),
+          sliderInput("i2", "Passenger (rear seats)", 0, 400, 0),
+          sliderInput("i3", "Fuel", 0, 288, 288),
+          sliderInput("i4", "Baggage", 0, 200, 10)
+          ),
+        mainPanel(
+          tabsetPanel(
+            tabPanel("Summary",
+                     h4("Weight and Balance Chart"),
+                     mainPanel(tableOutput("matrix")
+                               )
+                     ),
+            tabPanel("Visualization"),
+            tabPanel("Tab 3", "This tab is intentionally left blank")
+            )
+          )
+        )
+      )
+    ),              
+  server = function(input, output) {
+    output$matrix <- renderTable({
+      y <- matrix(nrow = 6, ncol = 3, data = NA)
+      rownames(y) <- c("empty", "fpax", "rpax", "fuel", "baggage", "total")
+      colnames(y) <- c("weight", "arm", "moment")
+      y["empty", "weight"] <- 1491
+      y[, "arm"] <- c(86.7, 80.5, 118.1, 95, 142.8, NA)
+      y["fpax", "weight"] <- input$i1
+      y["rpax", "weight"] <- input$i2
+      y["fuel", "weight"] <- input$i3
+      y["baggage", "weight"] <- input$i4
+      y["total", "weight"] <- sum(y[, "weight"][1:5])
+      y[, "moment"] <- y[, "weight"] * y[, "arm"]
+      y["total", "moment"] <- sum(y[, "moment"][1:5])
+      y["total", "arm"] <- y["total", "moment"] / y["total", "weight"]
+      y
+      }, rownames = T)
+    }
+  )
